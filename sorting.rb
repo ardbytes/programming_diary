@@ -69,12 +69,55 @@ end
 
 ################################ Heap Sort End #################################
 
+############################## Quick Sort Begin ################################
+
+def partition(a, l, r)
+  pivot = a[l]
+  pi = l
+  while l <= r
+    if a[l] <= pivot
+      l += 1
+    else
+      a[l], a[r] = a[r], a[l]
+      r -= 1
+    end
+  end
+  a[pi], a[r] = a[r], a[pi]
+  r
+end
+
+def _qsort(a, l, r)
+  if l < r
+    pos = partition(a, l, r)
+    _qsort(a, l, pos - 1)
+    _qsort(a, pos + 1, r)
+  end
+  a
+end
+
+def quick_sort(a)
+  _qsort(a.dup, 0, a.length-1)
+end
+
+############################### Quick Sort End #################################
+
 10.times do
   a = (1..999).to_a.shuffle
 
-  if(merge_sort(a) == heap_sort(a))
+  ms = merge_sort(a)
+  hs = heap_sort(a)
+  qs = quick_sort(a)
+  if(ms == hs && hs == qs)
     next
   else
     puts "Something wrong on #{a}"
   end
 end
+
+=begin
+a = (1..10).to_a.shuffle
+#a = [3, 7, 2, 4, 9, 10, 5, 1, 8, 6]
+p a
+a = quick_sort(a)
+p a
+=end
