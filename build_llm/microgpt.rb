@@ -25,3 +25,30 @@ uchars = docs.join.chars.uniq.sort # unique characters in the dataset become tok
 BOS = uchars.length # token id for a special Beginning of Sequence (BOS) token
 vocab_size = uchars.length + 1 # total number of unique tokens, +1 is for BOS
 puts "vocab size: #{vocab_size}"
+
+# Let there be Autograd to recursively apply the chain rule through a computation graph
+class Value
+  attr_accessor :data, :children, :local_grads
+
+  def initialize(data, children = [], local_grads = [])
+    self.data = data
+    self.children = children
+    self.local_grads = local_grads
+  end
+
+  def +(other)
+    other = Value.new(other) unless other.is_a?(Value)
+    Value.new(data + other.data, [self, other], [1, 1])
+  end
+
+  def coerce(other)
+    [Value.new(other), self]
+  end
+end
+
+v1 = Value.new(2)
+v2 = v1 + 2
+v3 = 3 + v1
+puts("v1     = #{v1.data}")
+puts("v1 + 2 = #{v2.data}")
+puts("3 + v1 = #{v3.data}")
