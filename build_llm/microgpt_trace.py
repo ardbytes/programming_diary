@@ -32,12 +32,21 @@ class Value:
         other = other if isinstance(other, Value) else Value(other)
         return Value(self.data + other.data, (self, other), (1, 1))
 
+    def __mul__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return Value(self.data * other.data, (self, other), (other.data, self.data))
+
     def __radd__(self, other): return self + other
+    def __rmul__(self, other): return self * other
 
 
 v1 = Value(2)
 v2 = v1 + 2
 v3 = 3 + v1
+v4 = v1 * 2
+v5 = 3 * v1
 print(f"v1     = {v1.data}")
 print(f"v1 + 2 = {v2.data}")
 print(f"3 + v1 = {v3.data}")
+print(f"v1 * 2 = {v4.data}")
+print(f"3 * v1 = {v5.data}")
