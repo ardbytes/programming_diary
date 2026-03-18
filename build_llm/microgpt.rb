@@ -56,18 +56,32 @@ class Value
     Value.new(data * other.data, [self, other], [other.data, data])
   end
 
+  # The local_grads parameter is assigned [other * data**(other - 1)] because it
+  # has to represent the derivative of the output with respect to self (data) for
+  # the exponentiation operation.
+  #
+  # What is the derivative with respect to n when you have a function f(n) = x^n?
+  # The derivative is f'(n) = x^n * ln(x). However, in this implementation, we are
+  # treating the exponentiation as a function of the base (data) rather than the
+  # exponent (other). So, we need to compute the derivative with respect to data,
+  # which is given by the formula for the derivative of a power
+  # function: f'(x) = n * x^(n - 1). Therefore, local_grads[0] is set to
+  # other * data**(other - 1) to represent the gradient with respect to self (data),
+  # while local_grads[1] is not needed for backpropagation in this case since we are
+  # not treating other as a variable that requires gradients.
+  def **(other)
+    Value.new(data**other, [self], [other * data**(other - 1)])
+  end
+
   def coerce(other)
     [Value.new(other), self]
   end
 end
 
-v1 = Value.new(2)
-v2 = v1 + 2
-v3 = 3 + v1
-v4 = v1 * 2
-v5 = 3 * v1
-puts("v1     = #{v1.data}")
-puts("v1 + 2 = #{v2.data}")
-puts("3 + v1 = #{v3.data}")
-puts("v1 * 2 = #{v4.data}")
-puts("3 * v1 = #{v5.data}")
+v = Value.new(2)
+puts("v      = #{v.data}")
+puts("v + 2  = #{(v + 2).data}")
+puts("3 + v  = #{(3 + v).data}")
+puts("v * 2  = #{(v * 2).data}")
+puts("3 * v  = #{(3 * v).data}")
+puts("v ** 2 = #{(v**2).data}")
