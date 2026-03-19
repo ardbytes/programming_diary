@@ -73,6 +73,36 @@ class Value
     Value.new(data**other, [self], [other * data**(other - 1)])
   end
 
+  # The log function is defined as log(x) = ln(x), and its derivative with respect
+  # to x is 1/x. Therefore, when we create a new Value instance for the log function,
+  # we set the local_grads parameter to [1 / data.to_f] to represent the gradient
+  # with respect to self (data). This allows backpropagation to correctly compute
+  # gradients for the log operation.
+  def log
+    Value.new(Math.log(data), [self], [1 / data.to_f])
+  end
+
+  # The exp function is defined as exp(x) = e^x, and its derivative with respect to
+  # x is e^x. Therefore, when we create a new Value instance for the exp function,
+  # we set the local_grads parameter to [Math.exp(data)] to represent the gradient
+  # with respect to self (data). This allows backpropagation to correctly compute
+  # gradients for the exp operation.
+  def exp
+    Value.new(Math.exp(data), [self], [Math.exp(data)])
+  end
+
+  # The relu function is defined as relu(x) = max(0, x), and its derivative with
+  # respect to data is 1 if data is positive and 0 otherwise. Therefore, when we
+  # create a new Value instance we set the local_grads parameter to
+  # [data.positive? ? 1.0 : 0.0] to represent the gradient with respect to self (data).
+  def relu
+    Value.new(data.positive? ? data : 0, [self], [data.positive? ? 1.0 : 0.0])
+  end
+
+  def -@
+    self * -1
+  end
+
   def coerce(other)
     [Value.new(other), self]
   end
@@ -85,3 +115,6 @@ puts("3 + v  = #{(3 + v).data}")
 puts("v * 2  = #{(v * 2).data}")
 puts("3 * v  = #{(3 * v).data}")
 puts("v ** 2 = #{(v**2).data}")
+puts("log(v) = #{v.log.data.round(2)}")
+puts("e ^ v  = #{v.exp.data.round(2)}")
+puts("-v     = #{-v.data}")
